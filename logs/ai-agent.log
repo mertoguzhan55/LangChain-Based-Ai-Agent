@@ -1,0 +1,4 @@
+[2025-04-13 13:34:03] | DEBUG | [app:main:10] | [############ AI AGENT CONFIGURATIONS ############]
+[2025-04-13 13:34:03] | DEBUG | [app:main:11] | [{'project': {'name': 'AI AGENT', 'description': 'Ai Agent Repository', 'company': 'Oguzhan', 'author': 'Mert Oğuzhan'}, 'logger': {'filepath': './logs/ai-agent.log', 'rotation': '50MB'}, 'agent': {'language_model_name': 'llama-3.3-70b-versatile', 'model_provider': 'groq'}}]
+[2025-04-13 13:34:20] | DEBUG | [app:main:10] | [############ AI AGENT CONFIGURATIONS ############]
+[2025-04-13 13:34:20] | DEBUG | [app:main:11] | [{'project': {'name': 'AI AGENT', 'description': 'Ai Agent Repository', 'company': 'Oguzhan', 'author': 'Mert Oğuzhan'}, 'logger': {'filepath': './logs/ai-agent.log', 'rotation': '50MB'}, 'agent': {'language_model_name': 'llama-3.3-70b-versatile', 'model_provider': 'groq'}}]
