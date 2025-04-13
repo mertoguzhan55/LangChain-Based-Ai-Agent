@@ -1,0 +1,13 @@
+[project]
+    name = "AI AGENT"
+    description = "Ai Agent Repository"
+    company = "Oguzhan"
+    author = "Mert Oğuzhan"
+
+[logger]
+    filepath="./logs/ai-agent.log"
+    rotation="50MB"
+
+[agent]
+    language_model_name = "llama-3.3-70b-versatile" # llama3-8b-8192
+    model_provider = "groq"
