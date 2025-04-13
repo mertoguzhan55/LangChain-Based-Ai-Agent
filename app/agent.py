@@ -13,11 +13,13 @@ class Agent:
 
     language_model_name: str
     model_provider: str
+    logger: any
 
     def __post_init__(self):
         self.tools_instance = Tools()
         self.tools = [self.tools_instance.get_youtube_link_according_to_the_song]
         self.model = init_chat_model(self.language_model_name, model_provider = self.model_provider)
+        self.logger.info("post init worked successsfully!")
 
     def run_agent(self):
         prompt = ChatPromptTemplate.from_messages([
