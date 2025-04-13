@@ -33,15 +33,18 @@ class Agent:
         MessagesPlaceholder(variable_name="agent_scratchpad"),
         ])
 
-        agent = create_tool_calling_agent(self.model, self.tools, prompt)
+        try:
+            agent = create_tool_calling_agent(self.model, self.tools, prompt)
+            agent_executor = AgentExecutor(agent=agent, tools = self.tools, handle_parsing_errors=True, verbose=True)
 
-        agent_executor = AgentExecutor(agent=agent, tools = self.tools, handle_parsing_errors=True, verbose=True)
+            user_input = input("You: ")
+            response = agent_executor.invoke({"input": user_input})
 
-        user_input = input("You: ")
-        response = agent_executor.invoke({"input": user_input})
-
-        output = response.get("output", "No response found.")
-        return output
+            output = response.get("output", "No response found.")
+            return output
+        except Exception as e:
+            self.logger.info(f"Exception executing the agent: {e}")
+        
 
 if __name__ == "__main__":
     pass
