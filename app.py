@@ -13,7 +13,7 @@ def main(args,configs):
     if args.test:
         exit()
 
-    agent = Agent(**configs["agent"])
+    agent = Agent(**configs["agent"], logger= logger)
     agent.run_agent()
 
 
