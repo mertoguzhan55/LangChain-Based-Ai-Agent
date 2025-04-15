@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medium2 API Explorer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    .section {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      padding: 15px;
+    }
+    button {
+      margin: 5px 5px 5px 0;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    input {
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Medium2 API Endpoint Explorer</h1>
+
+  <div class="section">
+    <h2>User</h2>
+    <div>
+      <input type="text" id="username" placeholder="Username">
+      <button onclick="userId()">User ID</button>
+    </div>
+    <div>
+      <input type="text" id="user_id" placeholder="User ID">
+      <button onclick="userInfo()">User Info</button>
+      <button onclick="userArticles()">User Articles</button>
+      <button onclick="userLists()">User Lists</button>
+      <button onclick="userFollowers()">User Followers</button>
+      <button onclick="userInterests()">User Interests</button>
+      <button onclick="userFollowing()">User Following</button>
+      <button onclick="userPublicationFollowing()">User Publication Following</button>
+      <button onclick="userPublications()">User Publications</button>
+      <button onclick="userTopArticles()">User Top Articles</button>
+      <button onclick="userBooks()">User Books</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Article</h2>
+    <div>
+      <input type="text" id="article_id" placeholder="Article ID">
+      <button onclick="articleInfo()">Article Info</button>
+      <button onclick="articleMarkdown()">Article Markdown</button>
+      <button onclick="articleHTML()">Article HTML</button>
+      <button onclick="articleAssets()">Article Assets</button>
+      <button onclick="articleResponses()">Article Responses</button>
+      <button onclick="articleFans()">Article Fans</button>
+      <button onclick="articleContent()">Article Content</button>
+      <button onclick="relatedArticles()">Related Articles</button>
+      <button onclick="recommendedArticles()">Recommended Articles</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Publication</h2>
+    <div>
+      <input type="text" id="publication_slug" placeholder="Publication Slug">
+      <button onclick="publicationId()">Publication ID</button>
+    </div>
+    <div>
+      <input type="text" id="publication_id" placeholder="Publication ID">
+      <button onclick="publicationInfo()">Publication Info</button>
+      <button onclick="publicationArticles()">Publication Articles</button>
+      <button onclick="publicationNewsletter()">Publication Newsletter</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Platform</h2>
+    <div>
+      <input type="text" id="tag" placeholder="Tag">
+      <input type="text" id="topic_slug" placeholder="Topic Slug">
+      <input type="text" id="mode" placeholder="Mode">
+      <input type="text" id="page" placeholder="Page">
+      <button onclick="archivedArticles()">Archived Articles</button>
+      <button onclick="recommendedFeed()">Recommended Feed</button>
+      <button onclick="topWriters()">Top Writers</button>
+      <button onclick="latestPosts()">Latest Posts</button>
+      <button onclick="topFeeds()">Top Feeds</button>
+      <button onclick="relatedTags()">Related Tags</button>
+      <button onclick="tagInfo()">Tag Info</button>
+      <button onclick="rootTags()">Root Tags</button>
+      <button onclick="recommendedUsers()">Recommended Users</button>
+      <button onclick="recommendedLists()">Recommended Lists</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>List</h2>
+    <div>
+      <input type="text" id="list_id" placeholder="List ID">
+      <button onclick="listInfo()">List Info</button>
+      <button onclick="listArticles()">List Articles</button>
+      <button onclick="listResponses()">List Responses</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Search</h2>
+    <div>
+      <input type="text" id="query" placeholder="Search Query">
+      <button onclick="searchUsers()">Search Users</button>
+      <button onclick="searchArticles()">Search Articles</button>
+      <button onclick="searchPublications()">Search Publications</button>
+      <button onclick="searchLists()">Search Lists</button>
+      <button onclick="searchTags()">Search Tags</button>
+    </div>
+  </div>
+
+  <div id="response" class="section"></div>
+
+  <script>
+    async function sendEndpoint(endpoint, params = {}) {
+      const responseDiv = document.getElementById("response");
+      responseDiv.innerHTML = "<em>Loading...</em>";
+
+      // Endpoint'teki {param} yerlerini değiştir
+      let finalEndpoint = endpoint;
+      for (const [key, value] of Object.entries(params)) {
+        finalEndpoint = finalEndpoint.replace(`{${key}}`, encodeURIComponent(value));
+      }
+
+      // FastAPI'ye gönder
+      const res = await fetch(finalEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+      });
+
+      const data = await res.json();
+      responseDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    }
+
+
+    function getValue(id) {
+      return document.getElementById(id)?.value || '';
+    }
+
+    // User
+    function userId() { 
+      const username = getValue('username');
+      sendEndpoint("/user/id_for/{username}", {username}); 
+    }
+    function userInfo() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}", {user_id}); 
+    }
+    function userArticles() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/articles", {user_id}); 
+    }
+    function userLists() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/lists", {user_id}); 
+    }
+    function userFollowers() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/followers", {user_id}); 
+    }
+    function userInterests() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/interests", {user_id}); 
+    }
+    function userFollowing() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/following", {user_id}); 
+    }
+    function userPublicationFollowing() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/publication_following", {user_id}); 
+    }
+    function userPublications() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/publications", {user_id}); 
+    }
+    function userTopArticles() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/top_articles", {user_id}); 
+    }
+    function userBooks() { 
+      const user_id = getValue('user_id');
+      sendEndpoint("/user/{user_id}/books", {user_id}); 
+    }
+
+    // Article
+    function articleInfo() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}", {article_id}); 
+    }
+    function articleMarkdown() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/markdown", {article_id}); 
+    }
+    function articleHTML() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/html", {article_id}); 
+    }
+    function articleAssets() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/assets", {article_id}); 
+    }
+    function articleResponses() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/responses", {article_id}); 
+    }
+    function articleFans() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/fans", {article_id}); 
+    }
+    function articleContent() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/content", {article_id}); 
+    }
+    function relatedArticles() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/related", {article_id}); 
+    }
+    function recommendedArticles() { 
+      const article_id = getValue('article_id');
+      sendEndpoint("/article/{article_id}/recommended", {article_id}); 
+    }
+
+    // Publication
+    function publicationId() { 
+      const publication_slug = getValue('publication_slug');
+      sendEndpoint("/publication/id_for/{publication_slug}", {publication_slug}); 
+    }
+    function publicationInfo() { 
+      const publication_id = getValue('publication_id');
+      sendEndpoint("/publication/{publication_id}", {publication_id}); 
+    }
+    function publicationArticles() { 
+      const publication_id = getValue('publication_id');
+      sendEndpoint("/publication/{publication_id}/articles", {publication_id}); 
+    }
+    function publicationNewsletter() { 
+      const publication_id = getValue('publication_id');
+      sendEndpoint("/publication/{publication_id}/newsletter", {publication_id}); 
+    }
+
+    // Platform
+    function archivedArticles() { 
+      const tag = getValue('tag');
+      sendEndpoint("/archived_articles/{tag}", {tag}); 
+    }
+    function recommendedFeed() { 
+      const tag = getValue('tag');
+      const page = getValue('page');
+      sendEndpoint("/recommended_feed/{tag}?page={page}", {tag, page}); 
+    }
+    function topWriters() { 
+      const topic_slug = getValue('topic_slug');
+      sendEndpoint("/top_writers/{topic_slug}", {topic_slug}); 
+    }
+    function latestPosts() { 
+      const topic_slug = getValue('topic_slug');
+      sendEndpoint("/latestposts/{topic_slug}", {topic_slug}); 
+    }
+    function topFeeds() { 
+      const tag = getValue('tag');
+      const mode = getValue('mode');
+      sendEndpoint("/topfeeds/{tag}/{mode}", {tag, mode}); 
+    }
+    function relatedTags() { 
+      const tag = getValue('tag');
+      sendEndpoint("/related_tags/{tag}", {tag}); 
+    }
+    function tagInfo() { 
+      const tag = getValue('tag');
+      sendEndpoint("/tag/{tag}", {tag}); 
+    }
+    function rootTags() { 
+      sendEndpoint("/root_tags"); 
+    }
+    function recommenedUsers() { 
+      const tag = getValue('tag');
+      sendEndpoint("/recommended_users/{tag}", {tag}); 
+    }
+    function recommenedLists() { 
+      const tag = getValue('tag');
+      sendEndpoint("/recommended_lists/{tag}", {tag}); 
+    }
+
+    // List
+    function listInfo() { 
+      const list_id = getValue('list_id');
+      sendEndpoint("/list/{list_id}", {list_id}); 
+    }
+    function listArticles() { 
+      const list_id = getValue('list_id');
+      sendEndpoint("/list/{list_id}/articles", {list_id}); 
+    }
+    function listResponses() { 
+      const list_id = getValue('list_id');
+      sendEndpoint("/list/{list_id}/responses", {list_id}); 
+    }
+
+    // Search
+    function searchUsers() { 
+      const query = getValue('query');
+      sendEndpoint("/search/users?query={query}", {query}); 
+    }
+    function searchArticles() { 
+      const query = getValue('query');
+      sendEndpoint("/search/articles?query={query}", {query}); 
+    }
+    function searchPublications() { 
+      const query = getValue('query');
+      sendEndpoint("/search/publications?query={query}", {query}); 
+    }
+    function searchLists() { 
+      const query = getValue('query');
+      sendEndpoint("/search/lists?query={query}", {query}); 
+    }
+    function searchTags() { 
+      const query = getValue('query');
+      sendEndpoint("/search/tags?query={query}", {query}); 
+    }
+  </script>
+
+</body>
+</html>

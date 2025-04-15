@@ -11,3 +11,9 @@
 [agent]
     language_model_name = "llama-3.3-70b-versatile" # llama3-8b-8192
     model_provider = "groq"
+
+[fastapi]
+    host = "0.0.0.0"
+    port = 9090
+    reload = true
+    #log_level = "debug"

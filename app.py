@@ -1,7 +1,9 @@
 from app.agent import Agent
 from app.config import Configs
 from app.logger import Logger
-
+from app.fastapi import Fastapi
+from dotenv import load_dotenv
+import os
 
 def main(args,configs):
 
@@ -12,15 +14,22 @@ def main(args,configs):
 
     if args.test:
         exit()
-
+    
     agent = Agent(**configs["agent"], logger= logger)
-    agent.run_agent()
+
+    if args.fastapi:
+        
+        fastapi = Fastapi(**configs["fastapi"],logger=logger)
+        fastapi.run()
+    else:
+        agent.run_agent()
 
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--environment", type=str)
+    parser.add_argument("-f", "--fastapi", action= "store_true")
     parser.add_argument("--test", action= "store_true")
 
     args = parser.parse_args()

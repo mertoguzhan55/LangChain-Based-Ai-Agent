@@ -1,10 +1,8 @@
 from langchain.chat_models import init_chat_model
-from langchain.agents import AgentExecutor, create_react_agent
+from langchain.agents import AgentExecutor
 from langchain.agents import create_tool_calling_agent
 from langchain_core.prompts.chat import ChatPromptTemplate
-from langchain_core.tools import tool
 from langchain_core.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate, MessagesPlaceholder
-from selenium.webdriver.support import expected_conditions as EC
 from dataclasses import dataclass
 from app.tools import Tools
 
@@ -38,12 +36,14 @@ class Agent:
             agent_executor = AgentExecutor(agent=agent, tools = self.tools, handle_parsing_errors=True, verbose=True)
 
             user_input = input("You: ")
+            user_input = f"I woul like to watch {user_input} video"
             response = agent_executor.invoke({"input": user_input})
 
             output = response.get("output", "No response found.")
+            self.logger.info(f"The output was generated successfully.")
             return output
         except Exception as e:
-            self.logger.info(f"Exception executing the agent: {e}")
+            self.logger.info(f"Exception while executing the tool: {e}")
         
 
 if __name__ == "__main__":
