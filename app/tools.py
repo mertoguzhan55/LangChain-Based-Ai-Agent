@@ -39,6 +39,10 @@ class Tools:
         
         return link
 
-
+    @tool
+    def tool1(self):
+        """
+        """
+        pass
 
 
