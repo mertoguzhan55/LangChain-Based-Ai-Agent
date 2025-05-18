@@ -17,3 +17,26 @@
     port = 9090
     reload = true
     #log_level = "debug"
+
+[crud]
+    database_type= "postgresql"
+    db_username= "postgres"
+    db_password= "admin"
+    db_host= "postgres"
+    db_port= "5432"
+    db_name= "workplace"
+
+[connection]
+    database_type= "postgresql"
+    db_username= "postgres"
+    db_password= "admin"
+    db_host= "localhost"
+    db_port= "5432"
+    db_name= "workplace"
+
+[fastapi_chat]
+    database_type= "postgresql"
+    host= "0.0.0.0"
+    port= 8000
+    reload= "true"
+    log_level= "info"

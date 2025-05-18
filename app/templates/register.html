@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background-color: #f7f7f7;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 2rem;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Register</h2>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/register">
+            <label for="email">Email:</label>
+            <input type="email" name="email" placeholder="Email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" placeholder="Password" required>
+
+            <button type="submit">Create Account</button>
+        </form>
+
+        <p>Already have an account? <a href="/login">Login here</a>.</p>
+    </div>
+</body>
+</html>
