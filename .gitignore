@@ -1,2 +1,5 @@
 /extras
 .env
+/logs/*
+__pycache/*
+app/__pycache

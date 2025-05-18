@@ -2,7 +2,9 @@ from app.agent import Agent
 from app.config import Configs
 from app.logger import Logger
 from app.fastapi import Fastapi
+from app.fastapi_chat import FastAPIServer
 from dotenv import load_dotenv
+from app.crud import CRUDOperations
 import os
 
 def main(args,configs):
@@ -18,8 +20,9 @@ def main(args,configs):
     agent = Agent(**configs["agent"], logger= logger)
 
     if args.fastapi:
-        
-        fastapi = Fastapi(**configs["fastapi"],logger=logger)
+        crud = CRUDOperations(**configs["crud"], logger = logger)
+        # fastapi = Fastapi(**configs["fastapi"],logger=logger, crud = crud)
+        fastapi = FastAPIServer(**configs["fastapi_chat"], crud=crud, logger=logger)
         fastapi.run()
     else:
         agent.run_agent()

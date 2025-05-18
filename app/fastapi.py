@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from app.logger import Logger
 from fastapi.responses import JSONResponse
+from app.crud import CRUDOperations
 import http.client
 import json
 import os
@@ -17,6 +18,7 @@ class Fastapi:
     host: str
     port: int
     reload: bool
+    crud: CRUDOperations
     logger: any
     
     def __post_init__(self):
@@ -45,6 +47,16 @@ class Fastapi:
         @self.app.get("/")
         async def base(request: Request):
             return self.templates.TemplateResponse("index.html", {"request": request})
+        
+        @self.app.post("/user/id_for/{username}")
+        async def get_candidate_all_information(username: str, request: Request):
+            candidate_id = self.request_medium_api(f"/user/id_for/{username}")
+            article_id_list = self.request_medium_api(f"/{candidate_id}/articles")
+            candidate_interests = self.request_medium_api(f"/user/{candidate_id}/interests")
+            
+            for id in article_id_list:
+                article_content = self.request_medium_api(f"/article/{id}/content")
+            
 
         @self.app.post("/user/{user_id}")
         async def get_user_info(user_id: str, request: Request):
@@ -71,10 +83,6 @@ class Fastapi:
             self.request_medium_api(f"/user/{user_id}/following")
             return {"user_id": user_id, "endpoint": "user"}
         
-
-        @self.app.post("/user/{user_id}/articles")
-        async def get_user_articles(user_id: str, request: Request):
-            return {"user_id": user_id, "endpoint": "user/articles"}
         
         @self.app.post("/user/id_for/{username}")
         async def get_user_id(request: Request, username: str):
@@ -95,12 +103,8 @@ class Fastapi:
         @self.app.post("/user/{user_id}/articles")
         async def get_user_articles(request: Request, user_id: str):
             # İsteğe bağlı olarak query parametreleri alabilirsin
-            query_params = await request.json()
-            count = query_params.get("count", "1")  # örneğin makale sayısı
-            after = query_params.get("after", "")    # sayfalama için kullanılabilir
 
-            after_param = f"&after={after}" if after else ""
-            path = f"/user/{user_id}/articles?count={count}{after_param}"
+            path = f"/user/{user_id}/articles"
 
             data = self.request_medium_api(path)
             print(data)
