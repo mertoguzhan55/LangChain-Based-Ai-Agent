@@ -22,7 +22,7 @@
     database_type= "postgresql"
     db_username= "postgres"
     db_password= "admin"
-    db_host= "postgres"
+    db_host= "localhost"
     db_port= "5432"
     db_name= "workplace"
 

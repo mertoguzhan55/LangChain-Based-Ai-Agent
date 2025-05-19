@@ -1,11 +1,11 @@
 version: "3.8"
 services:
-  agent:
-    image: agent
-    container_name: agent-container
-    restart: always
-    ports:
-      - "5001:5001"
+  # agent:
+  #   image: agent
+  #   container_name: agent-container
+  #   restart: always
+  #   ports:
+  #     - "5001:5001"
       
   postgres:
     image: postgres

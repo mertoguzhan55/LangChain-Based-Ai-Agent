@@ -6,11 +6,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Form, Request
 from app.logger import Logger
-from app.utils import verify_password, hash_password, create_access_token
+from app.utils import verify_password, hash_password, create_access_token, decode_token
 from fastapi.responses import JSONResponse, RedirectResponse
 
 from app.crud import CRUDOperations
-from models.models import User
+from models.models import User, Message
 
 @dataclass
 class FastAPIServer:
@@ -45,13 +45,13 @@ class FastAPIServer:
         async def login_user(request: Request, email: str = Form(...), password: str = Form(...)):
 
             await self.crud.initialize()
-            user = self.crud.read_by_email(User, str(email))
+            user = await self.crud.read_by_email(User, str(email))
 
             if not user or not verify_password(password, user.hashed_password):
                 return self.templates.TemplateResponse("login.html", {"request": request, "error": "Invalid credentials"})
 
             token = create_access_token({"sub": str(user.id)})
-            response = RedirectResponse("/", status_code = status.HTTP_302_FOUND)
+            response = RedirectResponse("/home", status_code=status.HTTP_302_FOUND)
             response.set_cookie(key="access_token", value=token, httponly=True, max_age=900)
             return response
 
@@ -75,7 +75,7 @@ class FastAPIServer:
             token = create_access_token({"sub": str(user.id)})
             print("Generated token:", token)
 
-            response = RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+            response = RedirectResponse("/home", status_code=status.HTTP_302_FOUND)
             response.set_cookie(key="access_token", value=token, httponly=True, max_age=900)
             return response
 
@@ -91,6 +91,53 @@ class FastAPIServer:
                 return {"payload": payload}
             except JWTError as e:
                 return {"error": f"Invalid or expired token: {str(e)}"}
+        
+        @self.app.get("/home")
+        async def homepage(request: Request):
+            token = request.cookies.get("access_token")
+            payload = decode_token(token)
+            if not payload:
+                return RedirectResponse("/login")
+
+            user_id = int(payload.get("sub"))
+            user = await self.crud.read_by_id(User, user_id)
+            inbox = await self.crud.get_messages_for_user(user.id)
+
+            return self.templates.TemplateResponse("home.html", {
+                "request": request,
+                "inbox": inbox
+            })
+
+        # Mesaj Gönderme
+        @self.app.post("/send-message")
+        async def send_message(
+            request: Request,
+            to_email: str = Form(...),
+            content: str = Form(...)
+        ):
+            token = request.cookies.get("access_token")
+            payload = decode_token(token)
+            if not payload:
+                return RedirectResponse("/login")
+
+            sender_id = int(payload.get("sub"))
+
+            # Kullanıcıları getir
+            sender = await self.crud.read_by_id(User, sender_id)
+            receiver = await self.crud.read_by_email(User, to_email)
+
+            if not receiver:
+                return self.templates.TemplateResponse("home.html", {
+                    "request": request,
+                    "inbox": [],
+                    "error": "Receiver not found"
+                })
+
+            # Mesajı oluştur ve veritabanına ekle
+            message = Message(sender_id=sender.id, receiver_id=receiver.id, content=content)
+            await self.crud.create(message)
+
+            return RedirectResponse("/home", status_code=302)
 
 
 if __name__ == "__main__":

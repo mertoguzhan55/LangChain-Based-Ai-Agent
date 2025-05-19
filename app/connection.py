@@ -39,6 +39,7 @@ class Connection:
     @custom_db_connection_handler
     async def create_engine(self):
         self.database_url = f"{self.database_type}+asyncpg://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+        print(self.database_url)
         self.engine = create_async_engine(self.database_url, echo=False)
 
     @custom_db_connection_handler

@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from app.connection import Connection
 from typing import Union
 from app.logger import Logger
 from app.handler import custom_db_crud_handler
+from models.models import Message
 import asyncio
 
 
@@ -47,21 +49,12 @@ class CRUDOperations:
         self.logger.info(f"the data: {obj} is added into the database.")
 
     @custom_db_crud_handler
-    async def read_by_id(self, model: any, obj_id: int) -> Union[bool, dict]:
-        """
-        Retrieves a record from the database by its ID asynchronously.
-
-        Args:
-            model (any): The model to query.
-            obj_id (int): The ID of the object to retrieve.
-
-        Returns:
-            Union[bool, dict]: The retrieved object if found, or False if an error occurs.
-        """
+    async def read_by_id(self, model: any, obj_id: int) -> Union[bool, any]:
         result = await self.connection.session.get(model, obj_id)
         await self.connection.close_session()
-        self.logger.info(f"Data read successfully: {result.to_dict()}")
-        return result.to_dict()
+        if result:
+            self.logger.info(f"Data read successfully: {result.to_dict()}")
+        return result  # ← artık model objesini döndürüyor
 
     @custom_db_crud_handler
     async def read_all(self, model: any) -> Union[list, bool]:
@@ -152,6 +145,18 @@ class CRUDOperations:
             self.logger.info(f"No user found with email: {email}")
 
         return user
+    
+    @custom_db_crud_handler
+    async def get_messages_for_user(self, user_id: int):
+        stmt = (
+            select(Message)
+            .where(Message.receiver_id == user_id)
+            .options(selectinload(Message.sender))  # ilişki ile birlikte al
+        )
+        result = await self.connection.session.execute(stmt)
+        messages = result.scalars().all()
+        await self.connection.close_session()
+        return messages
 
 
 

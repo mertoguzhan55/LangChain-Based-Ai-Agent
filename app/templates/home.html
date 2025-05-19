@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Message</title>
+</head>
+<body>
+    <h2>Send Message</h2>
+    <form method="post" action="/send-message">
+        <label for="to">To (email):</label>
+        <input type="email" name="to_email" required><br>
+
+        <label for="message">Message:</label><br>
+        <textarea name="content" rows="5" cols="40" required></textarea><br>
+
+        <button type="submit">Send</button>
+    </form>
+
+    <h3>Inbox</h3>
+    <ul>
+        {% for message in inbox %}
+            <li><b>From:</b> {{ message.sender.email }}<br> {{ message.content }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
